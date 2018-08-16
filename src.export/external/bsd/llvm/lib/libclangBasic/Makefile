@@ -1,0 +1,45 @@
+#	$NetBSD: Makefile,v 1.16 2017/08/01 20:07:42 joerg Exp $
+
+LIB=	clangBasic
+
+.include <bsd.init.mk>
+
+.PATH: ${CLANG_SRCDIR}/lib/Basic
+
+SRCS+=	Attributes.cpp \
+	Builtins.cpp \
+	CharInfo.cpp \
+	Cuda.cpp \
+	Diagnostic.cpp \
+	DiagnosticIDs.cpp \
+	DiagnosticOptions.cpp \
+	FileManager.cpp \
+	FileSystemStatCache.cpp \
+	IdentifierTable.cpp \
+	LangOptions.cpp \
+	MemoryBufferCache.cpp \
+	Module.cpp \
+	ObjCRuntime.cpp \
+	OpenMPKinds.cpp \
+	OperatorPrecedence.cpp \
+	SanitizerBlacklist.cpp \
+	Sanitizers.cpp \
+	SourceLocation.cpp \
+	SourceManager.cpp \
+	TargetInfo.cpp \
+	Targets.cpp \
+	TokenKinds.cpp \
+	Version.cpp \
+	VersionTuple.cpp \
+	VirtualFileSystem.cpp \
+	Warnings.cpp \
+	XRayLists.cpp
+
+CPPFLAGS.Version.cpp=	-DSVN_REVISION=\"${CLANG_REVISION}\" \
+			-DLLVM_REVISION=\"${LLVM_REVISION}\"
+
+.if defined(HOSTLIB)
+.include <bsd.hostlib.mk>
+.else
+.include <bsd.lib.mk>
+.endif

@@ -1,0 +1,71 @@
+ /* $NetBSD: TODO,v 1.25 2018/02/03 21:45:54 palle Exp $ */
+
+Things to be done:
+
+common:
+- make %g6 point to curcpu
+- make %g7 point to curlwp
+- change run-time checks for cpu type to function pointers
+
+sun4u:
+- GENERIC.UP kernel hangs on v445 (missing interrupt?)
+
+sun4v:
+ - current status: The kernel boots and starts the init process (syscalls are done, but crashes...) (*)
+- 64-bit kernel support
+- 32-bit kernel support
+- libkvm
+- ofwboot: tlb_init_sun4v() hardcodes number of slots to 64
+- locore.s: sun4v_datatrap missing implementation for trap level 1
+- check build without SUN4V defined
+- replace relevant references to %ver with GET_MAXCWP
+- pmap_mp_init(): sun4v missing handling
+- replace constructs like "wrpr %g0, PSTATE_KERN, %pstate" with NORMAL_GLOBALS
+- replace constructs line "wrpr %g0, PSTATE_INTR, %pstate" with ALTERNATE_GOBALS
+- sun4v tsb no need to lock... per cpu... anyway...
+- ci_tsb_desc->td_ctxidx: -1 or 1?
+- MP support - currently bypassed in pmap_bootstrap() for sun4v
+- vpci.c/vpcivar.h: cleanup FIXMEs
+- interrups not handled properly (com at ebus only...)
+- mpt(4) complains: mpt0: Phy 0: Link Status Unknown
+- man pages for drivers imported from OpenBSD lke vpci, vbus, cbus, vdsk, ldc etc.
+- vdsk and ldc drivers: code maked with OPENBSD_BUSDMA - make the bus_dma stuff work properly
+- vbus.c: handle prom_getprop() memory leaks
+- locore.s: rft_user (sun4v specific manaul fill) - seems to work, but is it good enough (compared to openbsds rft_user?
+
+
+(*)
+The current state of the code crashes in the code path after the init process
+(pid 1) does a fork(), starting pid 2.
+A new lwp is created and lwp_trampoline() is called which in turn calls 
+return_from_trap(). Here the code path continues to rft_user().
+A trap (0x68 - this is a Hyper-Priv trap...) occurs in rft_user_fault_start()
+where the FILL() macro causes the trap trying to load the local register %l0 
+from the stack using ASI AIUS (%o6 contains 0xffffffffffffcd91).
+The Hyper-Priv trap 0x68 is transformed to a Priv trap 0x31, causing 
+sun4v_dtsb_miss() to be called, continuing to sun4v_datatrap().
+Here TRAP_SETUP() is called, 
+The windows registers are now:  %otherwin=0, %cansave=6, canrestore=0.
+Part of the TRAP_SETUP() code will do a 'save %g6, 0, %sp', 
+The windows registers are now:  %otherwin=0, %cansave=5, canrestore=1.
+TRAP_SETUP() now updates %otherwin with the values of %canrestore and clears 
+%canrestore, so the windows registers are now: %otherwin=1, %cansave=5, 
+canrestore=0.
+The execution continues to data_access_fault() and further down the call stack
+with function calls until %cansave reaches 0 causing a spill trap 
+(0xa8 - spill_2_other). The contents of the %sp register is 0x00000000e00xxxxx.
+%wstate is (octal) 26.
+The windows registers are now:  %otherwin=1, %cansave=0, canrestore=5.
+The spill code is using ASI AIUS. spill_2_other is selected since %otherwin is
+non-zero, so the index in wstate.other is 2 (spill_2_other).
+SPILLBOTH() is invoked, using ASI AIUS. While storing %l0 to %sp+0x7ff 
+(%sp is 0xffffffffffffcd91) a new trap occurs, 0x68 (Hyper-priv, e.g. 0x31 Priv)
+at trap level 2 causing the trap level to go to 3. This is above the mx trap
+level for sun4v which is 2...
+So... the first access to 0xffffffffffffcd91 causes a cyclic access to
+0xffffffffffffcd91 again causing the max trap level to exceed.
+hm....how to fix this..........
+
+
+
+

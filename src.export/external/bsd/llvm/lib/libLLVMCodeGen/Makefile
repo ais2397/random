@@ -1,0 +1,170 @@
+#	$NetBSD: Makefile,v 1.33 2017/08/01 20:07:40 joerg Exp $
+
+LIB=	LLVMCodeGen
+
+.include <bsd.init.mk>
+
+.PATH: ${LLVM_SRCDIR}/lib/CodeGen
+
+SRCS+=	AggressiveAntiDepBreaker.cpp \
+	AllocationOrder.cpp \
+	Analysis.cpp \
+	AtomicExpandPass.cpp \
+	BasicTargetTransformInfo.cpp \
+	BranchCoalescing.cpp \
+	BranchFolding.cpp \
+	BranchRelaxation.cpp \
+	BuiltinGCs.cpp \
+	CalcSpillWeights.cpp \
+	CallingConvLower.cpp \
+	CodeGen.cpp \
+	CodeGenPrepare.cpp \
+	CountingFunctionInserter.cpp \
+	CriticalAntiDepBreaker.cpp \
+	DFAPacketizer.cpp \
+	DeadMachineInstructionElim.cpp \
+	DetectDeadLanes.cpp \
+	DwarfEHPrepare.cpp \
+	EarlyIfConversion.cpp \
+	EdgeBundles.cpp \
+	ExecutionDepsFix.cpp \
+	ExpandISelPseudos.cpp \
+	ExpandPostRAPseudos.cpp \
+	ExpandReductions.cpp \
+	FEntryInserter.cpp \
+	FaultMaps.cpp \
+	FuncletLayout.cpp \
+	GCMetadata.cpp \
+	GCMetadataPrinter.cpp \
+	GCRootLowering.cpp \
+	GCStrategy.cpp \
+	GlobalMerge.cpp \
+	IfConversion.cpp \
+	ImplicitNullChecks.cpp \
+	InlineSpiller.cpp \
+	InterferenceCache.cpp \
+	InterleavedAccessPass.cpp \
+	IntrinsicLowering.cpp \
+	LLVMTargetMachine.cpp \
+	LatencyPriorityQueue.cpp \
+	LazyMachineBlockFrequencyInfo.cpp \
+	LexicalScopes.cpp \
+	LiveDebugValues.cpp \
+	LiveDebugVariables.cpp \
+	LiveInterval.cpp \
+	LiveIntervalAnalysis.cpp \
+	LiveIntervalUnion.cpp \
+	LivePhysRegs.cpp \
+	LiveRangeCalc.cpp \
+	LiveRangeEdit.cpp \
+	LiveRangeShrink.cpp \
+	LiveRegMatrix.cpp \
+	LiveRegUnits.cpp \
+	LiveStackAnalysis.cpp \
+	LiveVariables.cpp \
+	LocalStackSlotAllocation.cpp \
+	LowLevelType.cpp \
+	LowerEmuTLS.cpp \
+	MIRPrinter.cpp \
+	MIRPrintingPass.cpp \
+	MachineBasicBlock.cpp \
+	MachineBranchProbabilityInfo.cpp \
+	MachineBlockFrequencyInfo.cpp \
+	MachineBlockPlacement.cpp \
+	MachineCopyPropagation.cpp \
+	MachineCSE.cpp \
+	MachineCombiner.cpp \
+	MachineDominanceFrontier.cpp \
+	MachineDominators.cpp \
+	MachineFrameInfo.cpp \
+	MachineFunction.cpp \
+	MachineFunctionPass.cpp \
+	MachineFunctionPrinterPass.cpp \
+	MachineInstr.cpp \
+	MachineInstrBundle.cpp \
+	MachineLICM.cpp \
+	MachineLoopInfo.cpp \
+	MachineModuleInfo.cpp \
+	MachineModuleInfoImpls.cpp \
+	MachineOutliner.cpp \
+	MachineOptimizationRemarkEmitter.cpp \
+	MachinePassRegistry.cpp \
+	MachinePipeliner.cpp \
+	MachinePostDominators.cpp \
+	MachineRegionInfo.cpp \
+	MachineRegisterInfo.cpp \
+	MachineSSAUpdater.cpp \
+	MachineScheduler.cpp \
+	MachineSink.cpp \
+	MachineTraceMetrics.cpp \
+	MachineVerifier.cpp \
+	MacroFusion.cpp \
+	OptimizePHIs.cpp \
+	PHIElimination.cpp \
+	PHIEliminationUtils.cpp \
+	ParallelCG.cpp \
+	PatchableFunction.cpp \
+	PeepholeOptimizer.cpp \
+	ScoreboardHazardRecognizer.cpp \
+	PostRAHazardRecognizer.cpp \
+	PostRASchedulerList.cpp \
+	PreISelIntrinsicLowering.cpp \
+	ProcessImplicitDefs.cpp \
+	PrologEpilogInserter.cpp \
+	PseudoSourceValue.cpp \
+	RegAllocBase.cpp \
+	RegAllocBasic.cpp \
+	RegAllocFast.cpp \
+	RegAllocGreedy.cpp \
+	RegAllocPBQP.cpp \
+	RegUsageInfoCollector.cpp \
+	RegUsageInfoPropagate.cpp \
+	RegisterClassInfo.cpp \
+	RegisterCoalescer.cpp \
+	RegisterPressure.cpp \
+	RegisterScavenging.cpp \
+	RegisterUsageInfo.cpp \
+	RenameIndependentSubregs.cpp \
+	ResetMachineFunctionPass.cpp \
+	SafeStack.cpp \
+	SafeStackColoring.cpp \
+	SafeStackLayout.cpp \
+	ScalarizeMaskedMemIntrin.cpp \
+	ScheduleDAG.cpp \
+	ScheduleDAGInstrs.cpp \
+	ScheduleDAGPrinter.cpp \
+	ShadowStackGCLowering.cpp \
+	ShrinkWrap.cpp \
+	SjLjEHPrepare.cpp \
+	SlotIndexes.cpp \
+	SpillPlacement.cpp \
+	SplitKit.cpp \
+	StackColoring.cpp \
+	StackMapLivenessAnalysis.cpp \
+	StackMaps.cpp \
+	StackProtector.cpp \
+	StackSlotColoring.cpp \
+	TailDuplication.cpp \
+	TailDuplicator.cpp \
+	TargetFrameLoweringImpl.cpp \
+	TargetInstrInfo.cpp \
+	TargetLoweringBase.cpp \
+	TargetLoweringObjectFileImpl.cpp \
+	TargetOptionsImpl.cpp \
+	TargetPassConfig.cpp \
+	TargetRegisterInfo.cpp \
+	TargetSchedule.cpp \
+	TargetSubtargetInfo.cpp \
+	TwoAddressInstructionPass.cpp \
+	UnreachableBlockElim.cpp \
+	VirtRegMap.cpp \
+	WinEHPrepare.cpp \
+	XRayInstrumentation.cpp
+
+.if defined(HOSTLIB)
+.include <bsd.hostlib.mk>
+# Crashes some versions of GCC
+CPPFLAGS.RenderMachineFunction.cpp+= -O0
+.else
+.include <bsd.lib.mk>
+.endif

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+for F
+do
+	{ grep '^#' "${F}"; grep -v '^#' "${F}" | LC_ALL=C sort ;} > "${F}".tmp
+	mv "${F}".tmp "${F}"
+done
